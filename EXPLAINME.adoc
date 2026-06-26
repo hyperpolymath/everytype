@@ -1,118 +1,251 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= RSR Template Repo - Explainme
-image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[License: MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
-
-:toc:
+= EveryType - EXPLAINME
+How the README claims map to real files.
+:toc: left
+:sectnums:
 :icons: font
 
-This file explains how the key template claims map to real files.
+This file explains how EveryType’s main claims map to implementation files, proof boundaries, repository machinery, and caveats.
 
-== Central Session Protocol Authority
+The README is the public orientation.
 
-Claim:
-Session protocols are centrally maintained and not duplicated in this template.
+This file is the engineering account.
+
+== SystemET Layering
+
+Claim: EveryType implements the open-source kernel for SystemET, a five-layer stratified type theory.
 
 How this is implemented:
 
-* The local dispatcher (`session/dispatch.sh`) maps canonical commands to central
-  protocol paths in `standards/session-management-standards`.
-* Local files (`session/custom-checks.k9`, `session/local-hooks.sh`,
-  `coordination.k9`) are integration-only.
+* L0 runtime target lives under `src/` and target-specific backend modules.
+* L1 equality is implemented as normalization plus comparison, not a coercion calculus.
+* L2 resources are implemented through the graded-modal substrate and pluggable semiring machinery.
+* L3 guarded recursion is represented with `▶`.
+* L4 effects are currently an amber/open proof area under the TEA-erasure programme.
 
 Caveat:
 
-* If `SESSION_STANDARDS_DIR` is unset and no adjacent standards checkout exists,
-  the dispatcher records the command but cannot resolve central checklist paths.
+* The README describes the intended SystemET architecture.
+* The current implementation status is bounded by `AFFIRMATION.adoc`, `AUDIT.adoc`, and the test suite.
+* L4 TEA erasure is not to be described as complete until `OPEN-A` is closed.
 
-== Canonical Command Surface
+== Totality Gate
 
-Claim:
-Template bindings align to one canonical command model.
+Claim: At L1, type-level functions must terminate, so equality is conversion.
 
 How this is implemented:
 
-* `Justfile` provides thin aliases (`intake-repo`, `checkpoint-change`,
-  `verify-maintenance`, `verify-substantial`, `verify-release`, `close-planned`,
-  `close-urgent`, `recover-repo`, `handover-*`).
+* The totality checker rejects non-terminating type-level computation.
+* Equality checking normalizes both sides and compares normal forms.
+* There is no System-Fc-style coercion language.
+
+Caveat:
+
+* The guarantee is only as strong as the implemented totality checker and the proof status recorded in `AFFIRMATION.adoc`.
+* Any accepted escape hatch must be documented as an assumption or unsafe boundary.
+
+== Structural Gate
+
+Claim: EveryType admits shallow structural projection but refuses deep co/contravariant rewriting.
+
+How this is implemented:
+
+* Rows, variants, refinements, and record-like products are handled through shallow CAR/CDR-style projection.
+* The permitted structural behaviour is projection from additive product structure.
+* Deep variance through function spaces, effects, resources, lifetimes, or linear positions is intentionally not admitted as a general rule.
+
+Caveat:
+
+* This is a design boundary, not an omission.
+* Contributions that reintroduce deep variance must justify why they do not recreate the Coherence Cliff.
+
+== Polarity Gate
+
+Claim: EveryType admits polarized casts, not true gradual `any`.
+
+How this is implemented:
+
+* Forward casts `A -> ?` are treated as lossless forgetting.
+* Backward casts `? -| A` are treated as lossy recovery attempts.
+* Lossy recovery is marked with a blame grade such as `!_{blame}`.
+
+Caveat:
+
+* There is no universal `any` that silently escapes the type system.
+* A backward cast is not magic. It is a graded loss event.
+
+== Pluggable Grades
+
+Claim: EveryType can express different disciplines by changing the L2 algebra.
+
+How this is implemented:
+
+* The checker is parameterised over a grade algebra.
+* Example grades include affine usage, costs, security lattices, probability-like grades, privacy budgets, and latency/billing products.
+
+Caveat:
+
+* A proposed grade must satisfy the laws required by the checker.
+* “Pick the algebra” does not mean arbitrary metadata. The algebra must support the relevant operations and ordering discipline.
+
+== TEA Erasure
+
+Claim: Total, effect-graded, affine handlers should erase when the TEA discipline proves them observationally harmless.
+
+How this is implemented:
+
+* TEA is treated as an L4 erasure target.
+* The intended condition is Total + Effect-graded + Affine.
+* Effects are not assumed free merely because they are typed.
+
+Caveat:
+
+* This is currently an open proof area.
+* The README must describe TEA erasure as a target or amber claim until the formal proof is complete.
+
+== Roles to Tropes
+
+Claim: EveryType replaces global roles and coercions with local finite trope transitions.
+
+How this is implemented:
+
+* Rather than proving global representational equality, EveryType represents state-indexed movement as `A@t1 -> A@t2 -> A@t3`.
+* Tropes are finite transition machines.
+* API protocols such as file handles, sockets, transactions, and streams can be modelled as finite movement through states.
+
+Caveat:
+
+* Tropes do not mean “all role problems are solved automatically.”
+* Each real API needs a finite machine and preservation story.
+
+== RSR Integration
+
+Claim: EveryType uses the Rhodium Standard Repository structure without making that infrastructure part of the language kernel.
+
+How this is implemented:
+
+* `0-AI-MANIFEST.a2ml` is the universal entry point for AI agents.
+* `.machine_readable/` stores project metadata, policies, anchors, contractiles, and agent-readable state.
+* `Justfile` provides the task surface.
+* `just validate` checks the repository shape.
+* `AFFIRMATION.adoc` records the dated honesty snapshot.
+* `AUDIT.adoc` acts as the release audit gate.
+
+Caveat:
+
+* RSR machinery is repository infrastructure.
+* It is not part of the EveryType type theory.
+* Passing RSR validation does not prove SystemET soundness.
+
+== Central Session Protocol Authority
+
+Claim: Session protocols are centrally maintained and not duplicated in this repository.
+
+How this is implemented:
+
+* `session/dispatch.sh` maps canonical commands to central protocol paths in `standards/session-management-standards`.
+* Local files such as `session/custom-checks.k9`, `session/local-hooks.sh`, and `coordination.k9` are integration-only.
+
+Caveat:
+
+* If `SESSION_STANDARDS_DIR` is unset and no adjacent standards checkout exists, the dispatcher records the command but cannot resolve central checklist paths.
+
+== Canonical Command Surface
+
+Claim: Template bindings align to one canonical command model.
+
+How this is implemented:
+
+* `Justfile` provides thin aliases such as:
+  ** `intake-repo`
+  ** `checkpoint-change`
+  ** `verify-maintenance`
+  ** `verify-substantial`
+  ** `verify-release`
+  ** `close-planned`
+  ** `close-urgent`
+  ** `recover-repo`
+  ** `handover-*`
+
 * Every alias calls `session/dispatch.sh` with canonical verb-object pairs.
 
 Caveat:
 
-* Recipes are wrappers only. They do not replace protocol content from
-  the central standards repo.
+* Recipes are wrappers only.
+* They do not replace protocol content from the central standards repository.
 
 == Runtime State Is Local
 
-Claim:
-Session state is per-repository runtime output, not standards text.
+Claim: Session state is per-repository runtime output, not standards text.
 
 How this is implemented:
 
-* `session/dispatch.sh` writes command and continuity-core capture stubs to
-  `.session/LAST-CANONICAL-COMMAND.md` in the target repository path.
+* `session/dispatch.sh` writes command and continuity-core capture stubs to `.session/LAST-CANONICAL-COMMAND.md`.
 
 Caveat:
 
-* Runtime files are intentionally lightweight and require human/agent completion.
+* Runtime files are intentionally lightweight.
+* They require human or agent completion.
 
 == Template Token Policy
 
-Claim:
-Placeholders are explicit template content until initialization.
+Claim: Placeholders are explicit template content until initialization.
 
 How this is implemented:
 
-* `README.adoc` and bootstrap recipes keep `{{TOKEN}}` placeholders visible.
+* Template files keep `{{TOKEN}}` placeholders visible.
 * `just init` performs token replacement.
 
 Caveat:
 
 * Uninitialized placeholders must not be treated as project-specific truth.
 
-== Dependency Updates (Dependabot)
+== Dependency Updates
 
-Claim:
-Dependency bumps land fast and safely, without manual chasing.
-
-How this is implemented:
-
-* `dependabot.yml` watches the Dependabot-supported ecosystems the estate
-  actually uses: `github-actions`, `cargo`, `mix` (Elixir), `docker`.
-* `dependabot-automerge.yml` auto-merges *every* bump (patch/minor/major,
-  security or routine) **once the required checks are green** — a broken bump
-  fails CI and stays open (you get an email); it never lands on a red `main`.
-
-Caveat:
-
-* Dependabot has **no Deno or Bun ecosystem**, and `pnpm` only rides under the
-  `npm` ecosystem (itself banned). For this Deno-first estate Dependabot cannot
-  watch the runtime dependencies; the `npm`/`pip` entries are retained only for
-  transitional/legacy manifests and are otherwise inert. Deno dependency
-  currency is managed via `deno.json`/`deno.lock`, not Dependabot.
-* Do **not** add Dependabot as a ruleset *bypass* actor: that lets bumps skip
-  the required checks (secret-scanning, SAST), removing the safety gate and the
-  "it broke" signal. Auto-merge-on-green gives fast merges without it.
-
-== Julia Registry Packages — Standalone Repo Requirement
-
-Claim:
-If this template is used to create a Julia package, it must remain a standalone repository registered with the Julia package registry.
+Claim: Dependency bumps land fast and safely, without manual chasing.
 
 How this is implemented:
 
-* Julia's package registry (General.jl or other) expects each package to be a standalone GitHub repository with `Project.toml` at the repository root.
-* Installation via `Pkg.add()`, dependency resolution, and automated CI/CD all depend on this canonical structure.
+* `dependabot.yml` watches supported ecosystems used by the estate:
+  ** `github-actions`
+  ** `cargo`
+  ** `mix`
+  ** `docker`
+
+* `dependabot-automerge.yml` auto-merges bumps only once required checks are green.
 
 Caveat:
 
-* Do NOT move this repository into a monorepo or subdirectory, as this breaks registry registration and package discoverability.
-* Julia packages published to a registry must each remain a standalone top-level repository (registry registration and package discovery require it).
-* Non-registry Julia packages can be organized differently if they are not published to any registry.
+* A broken bump fails CI and stays open.
+* It does not land on a red main.
+* Dependabot has no direct Deno or Bun ecosystem.
+* Do not add Dependabot as a ruleset bypass actor, because that lets bumps skip required checks.
 
+== Julia Registry Packages
 
-== License
+Claim: If this template is used to create a Julia package, it must remain a standalone repository registered with the Julia package registry.
 
-This project is licensed under the Mozilla Public License, v. 2.0. See the `LICENSE` file for details.
+How this is implemented:
 
-SPDX-License-Identifier: CC-BY-SA-4.0
+* Julia’s package registry expects each registered package to be a standalone repository.
+* `Project.toml` must live at the repository root.
+* `Pkg.add()`, dependency resolution, and package discovery depend on the canonical structure.
+
+Caveat:
+
+* Do not move a registered Julia package into a monorepo subdirectory.
+* Non-registry Julia packages can be organized differently if they are not published to a registry.
+
+== Licence
+
+Claim: The project uses split licensing.
+
+How this is implemented:
+
+* Code, configuration, and scripts use MPL-2.0.
+* Prose documentation uses CC-BY-SA-4.0.
+* Per-file SPDX headers are authoritative.
+
+Caveat:
+
+* The root `LICENSE` controls GitHub’s detected licence.
+* Documentation licensing must be preserved through explicit SPDX headers.
