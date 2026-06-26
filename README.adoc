@@ -1,99 +1,548 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath)
-= {{PROJECT_NAME}}
-:toc:
-:toc-placement: preamble
+= EveryType
+Pick the algebra. Get the discipline.
+:toc: left
+:sectnums:
+:icons: font
 
-image:https://img.shields.io/badge/OpenSSF-Best_Practices-green?logo=opensourcesecurity[OpenSSF Best Practices,link="https://www.bestpractices.dev/en/projects/new?repo_url=https://{{FORGE}}/{{OWNER}}/{{REPO}}"]
-image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[License: MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
-image:https://raw.githubusercontent.com/hyperpolymath/palimpsest-license/main/assets/badges/svg/badge-quantum-safe.svg[Quantum-Safe Provenance,link="https://github.com/hyperpolymath/palimpsest-license/blob/main/v1.0/exhibits/EXHIBIT-B-QUANTUM-SAFE.txt"]
-image:https://img.shields.io/badge/Docs-CC--BY--SA--4.0-blue.svg[Docs: CC-BY-SA-4.0,link="https://creativecommons.org/licenses/by-sa/4.0/"]
-image:https://api.thegreenwebfoundation.org/greencheckimage/{{FORGE}}[Green Web,link="https://www.thegreenwebfoundation.org/green-web-check/?url={{FORGE}}"]
-image:https://img.shields.io/badge/RSR-Rhodium_Standard-9C27B0[Rhodium Standard Repository,link="https://github.com/hyperpolymath/rhodium-standard-repositories"]
-image:https://img.shields.io/badge/Idris-Inside-5E5086?logo=idris&logoColor=white[Idris Inside,link="https://github.com/hyperpolymath/proven"]
+image:https://www.bestpractices.dev/projects/TODO/badge[OpenSSF Best Practices]
+image:https://img.shields.io/badge/license-MPL--2.0-blue[License: MPL-2.0]
+image:https://img.shields.io/badge/docs-CC--BY--SA--4.0-lightgrey[Docs: CC-BY-SA-4.0]
+image:https://img.shields.io/badge/provenance-quantum--safe-informational[Quantum-Safe Provenance]
+image:https://img.shields.io/badge/standard-Rhodium-success[Rhodium Standard Repository]
+image:https://img.shields.io/badge/idris-inside-purple[Idris Inside]
 
-{{PROJECT_DESCRIPTION}}
+EveryType is the open-source kernel for **SystemET**: a five-layer, stratified type theory designed to avoid the **Coherence Cliff**.
 
-[IMPORTANT]
-====
-*This file is a template.* You are reading `README.adoc` from the *RSR template repo*
-(or a freshly-cloned copy of it). Run `just init` to replace every `{{PLACEHOLDER}}`
-token with your project's details, then delete this admonition. Until you do, the
-`{{...}}` markers below are intentional placeholders, not content.
-====
+It is not a Haskell replacement.
+
+It is an experiment in a different bargain:
+
+> What if we make the totality cut at L1, keep equality as conversion, and refuse to pay the System Fc tax ever again?
+
+If that sounds like hand-waving, start with <<EXPLAINME.adoc#,EXPLAINME>>. That file maps the claims in this README to the actual implementation files, proof boundaries, caveats, and current evidence.
 
 == What this is
 
-A new repository scaffolded from the *Rhodium Standard Repository (RSR)* template:
-a batteries-included starting point that ships with CI/CD, machine-readable project
-metadata, an AI-agent gatekeeper protocol, a formally-typed ABI/FFI seam
-(Idris2 + Zig), container and reproducible-build scaffolding, and governance
-infrastructure — all wired and passing the RSR validators on day one.
+EveryType is a small kernel for building disciplined type systems by changing the algebra at the resource layer.
 
-Replace this section with a description of *your* project once initialised.
+The core wager is:
+
+> Do not add a new type relation when a layer discipline will do.
+
+SystemET keeps one primitive relation at L1:
+
+## [source,text]
+
+## equality = normalize + compare
+
+Everything else is layered above it:
+
+[cols="1,2,3",options="header"]
+|===
+| Layer | Meaning | Status in EveryType
+
+| **L4 · effects `◇`**
+| Effect handlers under erasure discipline
+| *AMBER* — target: make `◇` statically erasable like `□` under TEA-purity
+
+| **L3 · recursion `▶`**
+| Guarded recursion
+| DONE
+
+| **L2 · resources `□`**
+| Graded-modal substrate
+| DONE — this is the main product
+
+| **L1 · equality**
+| The totality cut: equality is conversion
+| DONE — no Fc, no roles, no coercion language
+
+| **L0 · runtime**
+| WASM/C target
+| DONE
+|===
+
+EveryType is the kernel.
+
+SystemET is the theory.
+
+AffineScript is one product profile built from it.
+
+== The problem: the Coherence Cliff
+
+Modern type systems often grow by adding new relations on types.
+
+Examples:
+
+* Haskell: equality `a ~ b`, roles, and representational equality
+* TypeScript: structural compatibility plus gradual escape hatches
+* Rust: lifetimes, variance, ownership, trait solving, and region constraints
+
+Each new relation interacts with the others.
+
+Two features do not create two obligations. They create a square of interactions.
+
+Three features do not create three obligations. They create a grid.
+
+Eventually, the compiler is no longer merely checking programs. It is managing a treaty between equality, subtyping, variance, effects, resources, inference, and runtime casts.
+
+That is the **Coherence Cliff**.
+
+EveryType calls the failure mode the **anti-stack**:
+
+> features accrete sideways as new type relations instead of stacking vertically as disciplined layers.
+
+The anti-stack does not stratify.
+
+== The SystemET alternative
+
+System Fc puts a great deal of expressive pressure into equality.
+
+SystemET cuts earlier.
+
+At L1, type-level computation must terminate. Equality is conversion. There is no coercion language, no global role system, and no representational equality proof calculus.
+
+The expressive pressure moves upward into:
+
+* graded resources
+* modalities
+* finite state transitions
+* guarded recursion
+* effect erasure conditions
+
+The fork is simple:
+
+## [source,text]
+
+System Fc: equality becomes a proof-carrying subsystem.
+
+## SystemET: equality remains conversion; discipline moves into layers.
+
+== The three gates
+
+EveryType works by refusing three tempting collapses.
+
+=== 1. The Totality Gate
+
+At L1, type-level functions must terminate.
+
+That means equality is:
+
+## [source,text]
+
+normalize
+compare
+done
+----
+
+No coercion language.
+
+No roles.
+
+No representational equality proof calculus.
+
+No “trust me, these two types are the same at runtime.”
+
+If a type-level function does not terminate, it does not belong at L1.
+
+See <<EXPLAINME.adoc#_1_totality_gate,EXPLAINME: Totality Gate>>.
+
+=== 2. The Structural Gate
+
+At L2, EveryType admits **shallow structural subtyping** where it is just projection.
+
+That includes width-like behaviour for:
+
+* rows
+* variants
+* refinements
+* record-like products
+
+The discipline is:
+
+## [source,text]
+
+CAR/CDR projection is allowed.
+Deep co/contravariant rewriting is not.
+---------------------------------------
+
+Shallow structural access is projection from an additive product `&`.
+
+Deep variance is different. It pushes structure through function spaces, resources, effects, lifetimes, and linearity. That is where coherence starts to leak.
+
+So EveryType allows shallow CAR/CDR structure and refuses deep variance.
+
+See <<EXPLAINME.adoc#_2_structural_gate,EXPLAINME: Structural Gate>>.
+
+=== 3. The Polarity Gate
+
+EveryType admits **polarized casts**, not true gradual typing.
+
+## [source,text]
+
+A -> ?        forward, lossless, forgetful
+? -| A        backward, lossy, echo-graded
+------------------------------------------
+
+The forward direction is ordinary forgetting.
+
+The backward direction is not treated as a magical runtime check. It is marked with a blame grade:
+
+## [source,text]
+
+## !_{blame}
+
+That grade is part of the resource story.
+
+EveryType does not have a universal `any` that silently punches a hole through the type system.
+
+It has directed loss, explicit polarity, and graded blame.
+
+See <<EXPLAINME.adoc#_3_polarity_gate,EXPLAINME: Polarity Gate>>.
+
+== What EveryType makes cheap
+
+EveryType is not mainly a syntax project.
+
+It is a kernel for generating disciplined type systems by changing the algebra at L2.
+
+=== 1. Invent a discipline in one line
+
+## [source,text]
+
+grade = Affine
+grade = Cost * Nat
+grade = Low <= High
+grade = [0,1]
+grade = PrivacyBudget
+grade = Latency x Billing
+-------------------------
+
+Same checker.
+
+Different algebra.
+
+Different discipline.
+
+That is the point.
+
+See <<EXPLAINME.adoc#_4_pluggable_grades,EXPLAINME: Pluggable Grades>>.
+
+=== 2. Zero-cost effects, when justified
+
+A handler that is:
+
+* **Total**
+* **Effect-graded**
+* **Affine**
+
+is a TEA handler.
+
+The goal of L4 is to prove when such handlers erase completely.
+
+This is not “effects are free.”
+
+It is:
+
+> effects erase only when the layer discipline proves they are observationally harmless.
+
+See <<EXPLAINME.adoc#_5_tea_erasure,EXPLAINME: TEA Erasure>>.
+
+=== 3. Roles become tropes
+
+System Fc asks whether two types are representationally equal under a global role discipline.
+
+EveryType avoids that question.
+
+Instead of:
+
+## [source,text]
+
+x : A
+coerce x : B
+------------
+
+EveryType uses finite state-indexed transitions:
+
+## [source,text]
+
+## A@t1 -> A@t2 -> A@t3
+
+A trope is a local, finite, model-checkable transition machine.
+
+This moves the burden from global representational equality to explicit state movement.
+
+No `coerce`.
+
+No role inference.
+
+No hidden representational treaty.
+
+See <<EXPLAINME.adoc#_6_roles_to_tropes,EXPLAINME: Roles to Tropes>>.
+
+=== 4. Dependent types, rows, and refinements live together
+
+Dependent types, rows, and refinements do not need to add new primitive relations.
+
+They live at L2 as structured uses of the graded substrate.
+
+That is the SystemET wager:
+
+> do not add a new relation when a layer discipline will do.
 
 == Quick start
 
-[source,bash]
-----
-# 1. Create a repo from this template (or clone it), then from the repo root:
-just init                # interactive bootstrap: fills every {{PLACEHOLDER}}
+## [source,sh]
 
-# 2. See the available tasks:
-just                     # lists all phases (build, test, validate, audit, ...)
+# Build the kernel
 
-# 3. Check the repo still satisfies the RSR shape:
-just validate            # structure + metadata checks
-----
+dune build @everytype
 
-`just init` prompts for the project name, owner, author, licence contact, and the
-other values listed in `.machine_readable/ai/PLACEHOLDERS.adoc`, substitutes them
-across the tree, validates the result, and (if available) runs the `k9-svc` checks.
+# Run the test suite
 
-== What you get
+dune runtest
 
-* *Machine-readable metadata* (`.machine_readable/6a2/`) — `STATE`, `META`,
-  `ECOSYSTEM`, `PLAYBOOK`, `AGENTIC`, `NEUROSYM`, `CLADE`, and `anchors/ANCHOR`,
-  in a2ml, so tools and agents can read the project's state and boundaries.
-* *AI gatekeeper protocol* — `0-AI-MANIFEST.a2ml` is the universal entry point that
-  tells an AI agent how to work in this repo before it touches anything.
-* *Typed ABI/FFI seam* — `src/interface/Abi/` (Idris2 type + layout proofs) over
-  `src/interface/ffi/` (Zig implementation), with generated C headers.
-* *CI/CD* — GitHub Actions for quality, security (CodeQL, Scorecard, secret
-  scanning), multi-forge mirroring, and RSR anti-pattern enforcement.
-* *Supply-chain & reproducibility* — container layering (stapeln), Guix shells,
-  SBOM, and signing hooks.
-* *Governance* — `GOVERNANCE.adoc`, `MAINTAINERS.adoc`, `.github/` community health
-  files, and a release `AUDIT.adoc` gate.
+# Validate the repository shape
+
+just validate
+
+# See available repository tasks
+
+## just
+
+If this repository has just been created from the RSR template, run:
+
+## [source,sh]
+
+## just init
+
+That command replaces template placeholders, validates the result, and prepares the repository-specific metadata.
 
 == Repository map
 
-[cols="1,3"]
+[cols="1,3",options="header"]
 |===
 | Path | What lives there
 
-| `0-AI-MANIFEST.a2ml`      | Universal entry point for AI agents (read first).
-| `.machine_readable/`      | Project metadata, policies, contractiles, AI configs.
-| `src/interface/`          | Typed ABI (Idris2) + FFI (Zig) + generated headers.
-| `docs/`                   | Onboarding, status, governance, practice, decisions.
-| `build/`, `Justfile`      | Task orchestration (`just` phases delegate to `build/just/*.just`).
-| `.github/`                | Workflows + community health files.
-| `tests/`, `benches/`      | Test suites and benchmarks.
+| `0-AI-MANIFEST.a2ml`
+| Universal entry point for AI agents. Read this before making changes.
+
+| `.machine_readable/`
+| Project metadata, policies, contractiles, AI configs, 6A2 state, anchors, and machine-readable governance.
+
+| `src/`
+| EveryType kernel implementation.
+
+| `src/interface/`
+| Typed ABI/FFI seam where applicable: Idris2 interface descriptions, Zig FFI, and generated headers.
+
+| `docs/`
+| Explanatory material, status notes, decisions, diagrams, and design records.
+
+| `EXPLAINME.adoc`
+| Engineering deep-dive. Maps README claims to implementation files, caveats, and evidence boundaries.
+
+| `AFFIRMATION.adoc`
+| Dated honesty snapshot of what the repository currently does and does not prove.
+
+| `AUDIT.adoc`
+| Release audit gate.
+
+| `Justfile`
+| Task surface. Thin command aliases delegate to the build/session machinery.
+
+| `.github/`
+| CI, security workflows, community health files, and repository automation.
+
+| `tests/`
+| Kernel tests, examples, and regression checks.
 |===
 
-== Where to go next
+== EveryType vs the world
 
-* `EXPLAINME.adoc` — the engineering deep-dive: how the pieces actually work.
-* `AFFIRMATION.adoc` — the dated, signed honesty snapshot of the repo's true state.
-* `AUDIT.adoc` — the release audit gate.
-* `.machine_readable/ai/PLACEHOLDERS.adoc` — the full placeholder reference.
+[cols="1,2,2,2,2,2",options="header"]
+|===
+|  | EveryType | Haskell / System Fc | Idris2 | Rust | TypeScript
+
+| **L1 equality**
+| conversion
+| coercion proofs / equality evidence
+| conversion
+| trait and region solving
+| structural compatibility
+
+| **Coercions**
+| **NO**
+| **YES**
+| mostly no at the core
+| lifetime and representation-sensitive coercions
+| casts and escape hatches
+
+| **L2 resources**
+| **pluggable semiring**
+| limited / plugin-dependent
+| quantity discipline `0,1,ω`
+| affine ownership
+| none
+
+| **Roles**
+| **tropes `A@t`**
+| global role system
+| none
+| lifetime / variance discipline
+| none
+
+| **Deep variance**
+| **REFUSED**
+| controlled but external to ET’s wager
+| limited
+| **YES**
+| **YES, often unsound around mutation/callbacks**
+
+| **Effects erase**
+| TEA-purity target
+| no general erasure theorem
+| no general erasure theorem
+| no general erasure theorem
+| no
+|===
+
+== Status
+
+The current repository status is intentionally split between this README and the evidence files.
+
+Current implementation target:
+
+* `v0.1`
+  ** L0-L3 kernel in OCaml
+  ** QTT-style core
+  ** pluggable semiring grades
+  ** totality checker using sized types
+  ** guarded recursion `▶`
+
+* `v0.2`
+  ** tropes prototype
+  ** split/rejoin discipline for handles
+
+* `OPEN-A`
+  ** formal TEA-purity proof
+
+For the current evidence boundary, see:
+
+* <<AFFIRMATION.adoc#,AFFIRMATION>>
+* <<AUDIT.adoc#,AUDIT>>
+* <<EXPLAINME.adoc#,EXPLAINME>>
+
+== RSR integration
+
+This repository uses the Rhodium Standard Repository pattern.
+
+That means it includes:
+
+* machine-readable metadata under `.machine_readable/`
+* AI-agent entry protocol through `0-AI-MANIFEST.a2ml`
+* repository validation through `just validate`
+* session command dispatch through `session/dispatch.sh`
+* governance and release gates
+* CI/CD and security workflows
+* SPDX-based licensing
+
+The RSR machinery is integration infrastructure. It is not part of the EveryType kernel.
+
+See <<EXPLAINME.adoc#_rsr_integration,EXPLAINME: RSR Integration>> for the claim-to-file mapping.
+
+== Session protocol authority
+
+Session protocols are centrally maintained and not duplicated in this repository.
+
+Local files are integration-only:
+
+* `session/dispatch.sh`
+* `session/custom-checks.k9`
+* `session/local-hooks.sh`
+* `coordination.k9`
+
+The dispatcher maps canonical commands to central protocol paths in `standards/session-management-standards`.
+
+If `SESSION_STANDARDS_DIR` is unset and no adjacent standards checkout exists, the dispatcher records the command but cannot resolve central checklist paths.
+
+== Dependency updates
+
+Dependabot watches the supported ecosystems used by the estate:
+
+* GitHub Actions
+* Cargo
+* Mix / Elixir
+* Docker
+
+Automated merges are allowed only after required checks pass.
+
+A broken bump fails CI and stays open. It does not land on a red main.
+
+Dependabot does not support Deno or Bun ecosystems directly. For Deno-first repositories, dependency currency is managed through `deno.json` and `deno.lock`, not Dependabot.
+
+Do not add Dependabot as a ruleset bypass actor. That would allow dependency bumps to skip required safety checks such as secret scanning and SAST.
+
+== What is AffineScript?
+
+AffineScript is one profile of EveryType:
+
+## [source,text]
+
+## grade = affine + cost
+
+AffineScript is the product language for WASM contracts and edge functions.
+
+EveryType is the kernel.
+
+SystemET is the theory.
+
+AffineScript is the opinionated deployment.
+
+== Contributing
+
+We are not currently looking for syntax bikeshedding.
+
+Useful contributions include:
+
+* new L2 semirings:
+  ** security lattices
+  ** differential privacy budgets
+  ** latency / cost models
+  ** information-flow grades
+
+* proofs:
+  ** TEA erasure
+  ** trope preservation
+  ** shallow structural soundness
+  ** guarded recursion interaction with grades
+
+* finite trope machines for real APIs:
+  ** file handles
+  ** sockets
+  ** database transactions
+  ** web streams
+  ** WASM capabilities
+
+Open issues with one of:
+
+## [source,text]
+
+[ET-L2]
+[ET-L3]
+[ET-L4]
+[TROPE]
+[TEA]
+-----
 
 == Licence
 
-Code, configuration and scripts are link:LICENSE[Mozilla Public License 2.0]
-(`MPL-2.0`); prose documentation is `CC-BY-SA-4.0`. Both texts live in
-`LICENSES/`, and per-file `SPDX-License-Identifier` headers are authoritative.
-The GitHub-detected licence is MPL-2.0 (the root `LICENSE`). Long-term
-attribution uses Quantum-Safe Provenance — see
-link:https://github.com/hyperpolymath/palimpsest-license/blob/main/v1.0/exhibits/EXHIBIT-B-QUANTUM-SAFE.txt[PMPL Exhibit B].
+Code, configuration, and scripts are licensed under the Mozilla Public License 2.0.
+
+Prose documentation is licensed under CC-BY-SA-4.0.
+
+Per-file `SPDX-License-Identifier` headers are authoritative.
+
+The GitHub-detected licence is MPL-2.0 through the root `LICENSE`.
+
+Long-term attribution uses Quantum-Safe Provenance. See PMPL Exhibit B where present.
