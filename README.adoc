@@ -1,322 +1,130 @@
-= EveryType
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+= anytype
 Pick the algebra. Get the discipline.
 :toc: left
 :sectnums:
 :icons: font
 
-image:https://www.bestpractices.dev/projects/TODO/badge[OpenSSF Best Practices]
-image:https://img.shields.io/badge/license-MPL--2.0-blue[License: MPL-2.0]
-image:https://img.shields.io/badge/docs-CC--BY--SA--4.0-lightgrey[Docs: CC-BY-SA-4.0]
-image:https://img.shields.io/badge/provenance-quantum--safe-informational[Quantum-Safe Provenance]
-image:https://img.shields.io/badge/standard-Rhodium-success[Rhodium Standard Repository]
-image:https://img.shields.io/badge/idris-inside-purple[Idris Inside]
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[License: MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
+image:https://img.shields.io/badge/Docs-CC--BY--SA--4.0-blue.svg[Docs: CC-BY-SA-4.0,link="https://creativecommons.org/licenses/by-sa/4.0/"]
+image:https://img.shields.io/badge/RSR-Rhodium_Standard-9C27B0[Rhodium Standard Repository,link="https://github.com/hyperpolymath/rhodium-standard-repositories"]
+image:https://img.shields.io/badge/Idris-Inside-5E5086?logo=idris&logoColor=white[Idris Inside,link="https://github.com/hyperpolymath/proven"]
+image:https://img.shields.io/badge/status-kernel_(early%2C_scaffolding)-orange[Status: early]
 
-EveryType is the open-source kernel for **SystemET**: a five-layer, stratified type theory designed to avoid the **Coherence Cliff**.
+*anytype* is the reference *kernel* for
+link:https://github.com/hyperpolymath/systemet[*systemet*] (Equality Theory): a
+small, parameterised type checker whose discipline you choose by choosing the
+algebra at the resource layer. The wager it implements is one sentence — *do not
+add a new type relation when a layer discipline will do.*
 
-It is not a Haskell replacement.
+[IMPORTANT]
+====
+*Why "anytype" and not "EveryType".* This kernel was first drafted under the name
+*EveryType*. That name over-claimed: it suggested a universal "every type" relation,
+which is exactly the System-F~c~ trap this design refuses. The honest claim is the
+opposite of universal coercion — pick *any* resource algebra you like, and the same
+kernel gives you *that* discipline. Hence *anytype*. (See `AFFIRMATION.adoc` for the
+no-overclaim posture.)
 
-It is an experiment in a different bargain:
-
-> What if we make the totality cut at L1, keep equality as conversion, and refuse to pay the System Fc tax ever again?
-
-If that sounds like hand-waving, start with <<EXPLAINME.adoc#,EXPLAINME>>. That file maps the claims in this README to the actual implementation files, proof boundaries, caveats, and current evidence.
+[cols="1,3",options="header"]
+|===
+| Repository | Role
+| `anytype` (this repo) | The kernel — the reference engine that implements Equality Theory. "Pick the algebra, get the discipline."
+| link:https://github.com/hyperpolymath/systemet[`systemet`] | The theory — Equality Theory. Semantic authority: spec, invariants, proof obligations.
+| AffineScript | One opinionated product profile of this kernel (`grade = affine + cost`).
+|===
+====
 
 == What this is
 
-EveryType is a small kernel for building disciplined type systems by changing the algebra at the resource layer.
+anytype is a kernel for *building disciplined type systems by changing the algebra at
+the resource layer (L2)*, rather than by bolting on new type relations. It is the
+*implementation* side of the split:
 
-The core wager is:
+* the *theory* — what the layers mean, which collapses are refused, and what must be
+  proven — lives in link:https://github.com/hyperpolymath/systemet[systemet];
+* the *engine* — the checker, the pluggable grade machinery, the runtime/ABI seam —
+  lives here.
 
-> Do not add a new type relation when a layer discipline will do.
+anytype *pins systemet upstream* and may *extend, not redefine* it. If implementation
+pressure ever demands a change to the theory, that is an ADR in systemet, not a quiet
+edit here.
 
-SystemET keeps one primitive relation at L1:
+== The one mechanism that matters: pluggable grades
 
-## [source,text]
+The whole point of the kernel is that a new discipline is a one-line change of the L2
+grade algebra, checked by the *same* rules:
 
-## equality = normalize + compare
-
-Everything else is layered above it:
-
-[cols="1,2,3",options="header"]
-|===
-| Layer | Meaning | Status in EveryType
-
-| **L4 · effects `◇`**
-| Effect handlers under erasure discipline
-| *AMBER* — target: make `◇` statically erasable like `□` under TEA-purity
-
-| **L3 · recursion `▶`**
-| Guarded recursion
-| DONE
-
-| **L2 · resources `□`**
-| Graded-modal substrate
-| DONE — this is the main product
-
-| **L1 · equality**
-| The totality cut: equality is conversion
-| DONE — no Fc, no roles, no coercion language
-
-| **L0 · runtime**
-| WASM/C target
-| DONE
-|===
-
-EveryType is the kernel.
-
-SystemET is the theory.
-
-AffineScript is one product profile built from it.
-
-== The problem: the Coherence Cliff
-
-Modern type systems often grow by adding new relations on types.
-
-Examples:
-
-* Haskell: equality `a ~ b`, roles, and representational equality
-* TypeScript: structural compatibility plus gradual escape hatches
-* Rust: lifetimes, variance, ownership, trait solving, and region constraints
-
-Each new relation interacts with the others.
-
-Two features do not create two obligations. They create a square of interactions.
-
-Three features do not create three obligations. They create a grid.
-
-Eventually, the compiler is no longer merely checking programs. It is managing a treaty between equality, subtyping, variance, effects, resources, inference, and runtime casts.
-
-That is the **Coherence Cliff**.
-
-EveryType calls the failure mode the **anti-stack**:
-
-> features accrete sideways as new type relations instead of stacking vertically as disciplined layers.
-
-The anti-stack does not stratify.
-
-== The SystemET alternative
-
-System Fc puts a great deal of expressive pressure into equality.
-
-SystemET cuts earlier.
-
-At L1, type-level computation must terminate. Equality is conversion. There is no coercion language, no global role system, and no representational equality proof calculus.
-
-The expressive pressure moves upward into:
-
-* graded resources
-* modalities
-* finite state transitions
-* guarded recursion
-* effect erasure conditions
-
-The fork is simple:
-
-## [source,text]
-
-System Fc: equality becomes a proof-carrying subsystem.
-
-## SystemET: equality remains conversion; discipline moves into layers.
-
-== The three gates
-
-EveryType works by refusing three tempting collapses.
-
-=== 1. The Totality Gate
-
-At L1, type-level functions must terminate.
-
-That means equality is:
-
-## [source,text]
-
-normalize
-compare
-done
+[source,text]
 ----
-
-No coercion language.
-
-No roles.
-
-No representational equality proof calculus.
-
-No “trust me, these two types are the same at runtime.”
-
-If a type-level function does not terminate, it does not belong at L1.
-
-See <<EXPLAINME.adoc#_1_totality_gate,EXPLAINME: Totality Gate>>.
-
-=== 2. The Structural Gate
-
-At L2, EveryType admits **shallow structural subtyping** where it is just projection.
-
-That includes width-like behaviour for:
-
-* rows
-* variants
-* refinements
-* record-like products
-
-The discipline is:
-
-## [source,text]
-
-CAR/CDR projection is allowed.
-Deep co/contravariant rewriting is not.
----------------------------------------
-
-Shallow structural access is projection from an additive product `&`.
-
-Deep variance is different. It pushes structure through function spaces, resources, effects, lifetimes, and linearity. That is where coherence starts to leak.
-
-So EveryType allows shallow CAR/CDR structure and refuses deep variance.
-
-See <<EXPLAINME.adoc#_2_structural_gate,EXPLAINME: Structural Gate>>.
-
-=== 3. The Polarity Gate
-
-EveryType admits **polarized casts**, not true gradual typing.
-
-## [source,text]
-
-A -> ?        forward, lossless, forgetful
-? -| A        backward, lossy, echo-graded
-------------------------------------------
-
-The forward direction is ordinary forgetting.
-
-The backward direction is not treated as a magical runtime check. It is marked with a blame grade:
-
-## [source,text]
-
-## !_{blame}
-
-That grade is part of the resource story.
-
-EveryType does not have a universal `any` that silently punches a hole through the type system.
-
-It has directed loss, explicit polarity, and graded blame.
-
-See <<EXPLAINME.adoc#_3_polarity_gate,EXPLAINME: Polarity Gate>>.
-
-== What EveryType makes cheap
-
-EveryType is not mainly a syntax project.
-
-It is a kernel for generating disciplined type systems by changing the algebra at L2.
-
-=== 1. Invent a discipline in one line
-
-## [source,text]
-
 grade = Affine
 grade = Cost * Nat
-grade = Low <= High
-grade = [0,1]
+grade = Low <= High        (an information-flow lattice)
+grade = [0,1]              (a probability-like grade)
 grade = PrivacyBudget
 grade = Latency x Billing
--------------------------
+----
 
-Same checker.
+A candidate grade is admissible only if it satisfies the laws the checker requires
+(the relevant semiring/ordering operations). "Pick the algebra" is not "attach
+arbitrary metadata". The *laws* a grade must satisfy are systemet's to define; the
+*checking* against them is anytype's to perform.
 
-Different algebra.
+== What the kernel implements (and how far)
 
-Different discipline.
+These are the layers of Equality Theory as the *kernel* sees them. For what each layer
+*means*, read link:https://github.com/hyperpolymath/systemet[systemet]; this table is
+only the implementation status.
 
-That is the point.
+[cols="1,2,2",options="header"]
+|===
+| Layer | Kernel responsibility | Implementation status
 
-See <<EXPLAINME.adoc#_4_pluggable_grades,EXPLAINME: Pluggable Grades>>.
+| *L4 · effects `◇`*
+| Effect handlers; detect when a Total+Effect-graded+Affine (TEA) handler erases
+| *not started* — depends on systemet's open TEA-erasure result
 
-=== 2. Zero-cost effects, when justified
+| *L3 · recursion `▶`*
+| Guarded recursion checking
+| *not started*
 
-A handler that is:
+| *L2 · resources `□`*
+| The graded-modal substrate + the pluggable grade-algebra interface
+| *design* — this is the kernel's centre of gravity
 
-* **Total**
-* **Effect-graded**
-* **Affine**
+| *L1 · equality*
+| Equality as `normalize` + `compare`; the totality check that makes it decidable
+| *design*
 
-is a TEA handler.
+| *L0 · runtime*
+| Lowering to a WASM/C target
+| *not started*
+|===
 
-The goal of L4 is to prove when such handlers erase completely.
-
-This is not “effects are free.”
-
-It is:
-
-> effects erase only when the layer discipline proves they are observationally harmless.
-
-See <<EXPLAINME.adoc#_5_tea_erasure,EXPLAINME: TEA Erasure>>.
-
-=== 3. Roles become tropes
-
-System Fc asks whether two types are representationally equal under a global role discipline.
-
-EveryType avoids that question.
-
-Instead of:
-
-## [source,text]
-
-x : A
-coerce x : B
-------------
-
-EveryType uses finite state-indexed transitions:
-
-## [source,text]
-
-## A@t1 -> A@t2 -> A@t3
-
-A trope is a local, finite, model-checkable transition machine.
-
-This moves the burden from global representational equality to explicit state movement.
-
-No `coerce`.
-
-No role inference.
-
-No hidden representational treaty.
-
-See <<EXPLAINME.adoc#_6_roles_to_tropes,EXPLAINME: Roles to Tropes>>.
-
-=== 4. Dependent types, rows, and refinements live together
-
-Dependent types, rows, and refinements do not need to add new primitive relations.
-
-They live at L2 as structured uses of the graded substrate.
-
-That is the SystemET wager:
-
-> do not add a new relation when a layer discipline will do.
+[WARNING]
+====
+*Honesty check.* At this commit there is *no working kernel*. The `src/`, `tests/`,
+and `verification/proofs/` trees are RSR *scaffolding* inherited from the template,
+not a checker. This README states intent (where anytype is going); the engineering
+state lives in `EXPLAINME.adoc` and the dated snapshot in `AFFIRMATION.adoc`. Do not
+cite anytype as a usable type checker yet.
+====
 
 == Quick start
 
-## [source,sh]
+[source,sh]
+----
+# See the available repository tasks
+just
 
-# Build the kernel
-
-dune build @everytype
-
-# Run the test suite
-
-dune runtest
-
-# Validate the repository shape
-
+# Validate the repository shape (this works today — it checks RSR structure)
 just validate
 
-# See available repository tasks
-
-## just
-
-If this repository has just been created from the RSR template, run:
-
-## [source,sh]
-
-## just init
-
-That command replaces template placeholders, validates the result, and prepares the repository-specific metadata.
+# Build / test the kernel (placeholder targets until the kernel exists)
+just test
+just quality
+----
 
 == Repository map
 
@@ -324,225 +132,77 @@ That command replaces template placeholders, validates the result, and prepares 
 |===
 | Path | What lives there
 
-| `0-AI-MANIFEST.a2ml`
-| Universal entry point for AI agents. Read this before making changes.
-
-| `.machine_readable/`
-| Project metadata, policies, contractiles, AI configs, 6A2 state, anchors, and machine-readable governance.
-
-| `src/`
-| EveryType kernel implementation.
-
-| `src/interface/`
-| Typed ABI/FFI seam where applicable: Idris2 interface descriptions, Zig FFI, and generated headers.
-
-| `docs/`
-| Explanatory material, status notes, decisions, diagrams, and design records.
-
-| `EXPLAINME.adoc`
-| Engineering deep-dive. Maps README claims to implementation files, caveats, and evidence boundaries.
-
-| `AFFIRMATION.adoc`
-| Dated honesty snapshot of what the repository currently does and does not prove.
-
-| `AUDIT.adoc`
-| Release audit gate.
-
-| `Justfile`
-| Task surface. Thin command aliases delegate to the build/session machinery.
-
-| `.github/`
-| CI, security workflows, community health files, and repository automation.
-
-| `tests/`
-| Kernel tests, examples, and regression checks.
+| `0-AI-MANIFEST.a2ml` | Universal entry point for AI agents. Read this before making changes.
+| `.machine_readable/` | Project metadata, policies, contractiles, AI configs, 6A2 state, anchors.
+| `src/` | (Planned) anytype kernel implementation.
+| `src/interface/` | Typed ABI/FFI seam: Idris2 interface descriptions, Zig FFI, generated headers.
+| `verification/` | (Planned) proofs/tests that the kernel honours systemet's obligations.
+| `docs/` | Status notes, decisions, diagrams, design records.
+| `EXPLAINME.adoc` | Engineering deep-dive: how README claims map to files, caveats, evidence.
+| `AFFIRMATION.adoc` | Dated honesty snapshot of what the kernel currently does and does not do.
+| `AUDIT.adoc` | Release audit gate.
+| `Justfile` | Task surface. Thin aliases delegate to the build/session machinery.
 |===
 
-== EveryType vs the world
+== anytype vs the world
 
-[cols="1,2,2,2,2,2",options="header"]
+The interesting comparison is *the theory* — see systemet's README for the full
+table. As an *engine*, anytype's distinguishing bet is that the discipline is a
+parameter (the L2 grade algebra), not a fixed feature set:
+
+[cols="1,2,2,2",options="header"]
 |===
-|  | EveryType | Haskell / System Fc | Idris2 | Rust | TypeScript
+|  | anytype | Haskell / System Fc | Rust
 
-| **L1 equality**
-| conversion
-| coercion proofs / equality evidence
-| conversion
-| trait and region solving
-| structural compatibility
+| *Discipline source*
+| *pluggable L2 grade algebra*
+| fixed relation set (equality evidence, roles)
+| fixed (ownership, lifetimes, variance)
 
-| **Coercions**
-| **NO**
-| **YES**
-| mostly no at the core
-| lifetime and representation-sensitive coercions
-| casts and escape hatches
+| *Coercions*
+| *none* (equality is conversion)
+| *yes*
+| representation/lifetime-sensitive
 
-| **L2 resources**
-| **pluggable semiring**
-| limited / plugin-dependent
-| quantity discipline `0,1,ω`
-| affine ownership
-| none
-
-| **Roles**
-| **tropes `A@t`**
+| *Roles*
+| *tropes `A@t`* (local finite machines)
 | global role system
-| none
 | lifetime / variance discipline
-| none
-
-| **Deep variance**
-| **REFUSED**
-| controlled but external to ET’s wager
-| limited
-| **YES**
-| **YES, often unsound around mutation/callbacks**
-
-| **Effects erase**
-| TEA-purity target
-| no general erasure theorem
-| no general erasure theorem
-| no general erasure theorem
-| no
 |===
 
-== Status
+== Relationship to systemet and AffineScript
 
-The current repository status is intentionally split between this README and the evidence files.
-
-Current implementation target:
-
-* `v0.1`
-  ** L0-L3 kernel in OCaml
-  ** QTT-style core
-  ** pluggable semiring grades
-  ** totality checker using sized types
-  ** guarded recursion `▶`
-
-* `v0.2`
-  ** tropes prototype
-  ** split/rejoin discipline for handles
-
-* `OPEN-A`
-  ** formal TEA-purity proof
-
-For the current evidence boundary, see:
-
-* <<AFFIRMATION.adoc#,AFFIRMATION>>
-* <<AUDIT.adoc#,AUDIT>>
-* <<EXPLAINME.adoc#,EXPLAINME>>
+* link:https://github.com/hyperpolymath/systemet[*systemet*] is the *theory* anytype
+  implements; it is the semantic authority. anytype must not silently diverge from it.
+* *AffineScript* is one *product profile* of this kernel (`grade = affine + cost`),
+  aimed at WASM contracts and edge functions. It is downstream of anytype.
 
 == RSR integration
 
-This repository uses the Rhodium Standard Repository pattern.
-
-That means it includes:
-
-* machine-readable metadata under `.machine_readable/`
-* AI-agent entry protocol through `0-AI-MANIFEST.a2ml`
-* repository validation through `just validate`
-* session command dispatch through `session/dispatch.sh`
-* governance and release gates
-* CI/CD and security workflows
-* SPDX-based licensing
-
-The RSR machinery is integration infrastructure. It is not part of the EveryType kernel.
-
-See <<EXPLAINME.adoc#_rsr_integration,EXPLAINME: RSR Integration>> for the claim-to-file mapping.
-
-== Session protocol authority
-
-Session protocols are centrally maintained and not duplicated in this repository.
-
-Local files are integration-only:
-
-* `session/dispatch.sh`
-* `session/custom-checks.k9`
-* `session/local-hooks.sh`
-* `coordination.k9`
-
-The dispatcher maps canonical commands to central protocol paths in `standards/session-management-standards`.
-
-If `SESSION_STANDARDS_DIR` is unset and no adjacent standards checkout exists, the dispatcher records the command but cannot resolve central checklist paths.
-
-== Dependency updates
-
-Dependabot watches the supported ecosystems used by the estate:
-
-* GitHub Actions
-* Cargo
-* Mix / Elixir
-* Docker
-
-Automated merges are allowed only after required checks pass.
-
-A broken bump fails CI and stays open. It does not land on a red main.
-
-Dependabot does not support Deno or Bun ecosystems directly. For Deno-first repositories, dependency currency is managed through `deno.json` and `deno.lock`, not Dependabot.
-
-Do not add Dependabot as a ruleset bypass actor. That would allow dependency bumps to skip required safety checks such as secret scanning and SAST.
-
-== What is AffineScript?
-
-AffineScript is one profile of EveryType:
-
-## [source,text]
-
-## grade = affine + cost
-
-AffineScript is the product language for WASM contracts and edge functions.
-
-EveryType is the kernel.
-
-SystemET is the theory.
-
-AffineScript is the opinionated deployment.
+This repository uses the Rhodium Standard Repository pattern: machine-readable
+metadata under `.machine_readable/`, the `0-AI-MANIFEST.a2ml` agent entry point,
+`just validate` for repository shape, governance and release gates, and SPDX-based
+licensing. *The RSR machinery is repository infrastructure — it is not part of the
+anytype kernel, and passing RSR validation proves nothing about the kernel's
+correctness.* See `EXPLAINME.adoc#_rsr_integration`.
 
 == Contributing
 
-We are not currently looking for syntax bikeshedding.
+Most of the deep work is *theory and proof* and belongs in
+link:https://github.com/hyperpolymath/systemet[systemet]. Engine-side contributions
+that belong here:
 
-Useful contributions include:
+* the L2 grade-algebra interface and concrete grade instances (affine, cost,
+  information-flow lattice, privacy budget) *that satisfy systemet's laws*;
+* the L1 conversion checker and its totality gate;
+* the typed ABI/FFI seam (`src/interface/`).
 
-* new L2 semirings:
-  ** security lattices
-  ** differential privacy budgets
-  ** latency / cost models
-  ** information-flow grades
-
-* proofs:
-  ** TEA erasure
-  ** trope preservation
-  ** shallow structural soundness
-  ** guarded recursion interaction with grades
-
-* finite trope machines for real APIs:
-  ** file handles
-  ** sockets
-  ** database transactions
-  ** web streams
-  ** WASM capabilities
-
-Open issues with one of:
-
-## [source,text]
-
-[ET-L2]
-[ET-L3]
-[ET-L4]
-[TROPE]
-[TEA]
------
+Open issues with one of: `[ET-L2]`, `[ET-L3]`, `[ET-L4]`, `[TROPE]`, `[TEA]`.
 
 == Licence
 
-Code, configuration, and scripts are licensed under the Mozilla Public License 2.0.
-
-Prose documentation is licensed under CC-BY-SA-4.0.
-
-Per-file `SPDX-License-Identifier` headers are authoritative.
-
-The GitHub-detected licence is MPL-2.0 through the root `LICENSE`.
-
-Long-term attribution uses Quantum-Safe Provenance. See PMPL Exhibit B where present.
+Code, configuration, and scripts are licensed under the Mozilla Public License 2.0
+(`MPL-2.0`); prose documentation under `CC-BY-SA-4.0`. Per-file
+`SPDX-License-Identifier` headers are authoritative; the GitHub-detected licence is
+MPL-2.0 via the root `LICENSE`. Long-term attribution uses Quantum-Safe Provenance
+(PMPL Exhibit B where present).

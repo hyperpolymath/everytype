@@ -5,11 +5,11 @@
 #
 [metadata]
 version = "0.1.0"
-last-updated = "{{CURRENT_DATE}}"
+last-updated = "2026-06-28"
 
 [project]
-name = "[YOUR-REPO-NAME]"
-purpose = "{{PROJECT_DESCRIPTION}}"
+name = "anytype"
+purpose = "Reference kernel for systemet (Equality Theory): a parameterised type checker whose discipline is chosen by choosing the L2 resource algebra. 'Pick the algebra, get the discipline.' Implements the theory; pins systemet upstream. Early/scaffolding — no working checker yet."
 
 [ai-allocation]
 agents = [

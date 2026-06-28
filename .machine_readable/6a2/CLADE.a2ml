@@ -3,24 +3,29 @@
 # See: https://github.com/hyperpolymath/gv-clade-index
 
 [identity]
-uuid = "a5ea1382-a34c-5334-8a46-a2ebe904c810"
+# uuid: PROVISIONAL — deterministic UUIDv5 of the canonical forge URL
+# (uuid5(URL-namespace, "https://github.com/hyperpolymath/anytype")).
+# Reproducible, not invented; confirm/register the canonical id in gv-clade-index.
+uuid = "967a6646-b2be-5b10-9fa6-fa0bb1db090c"
 primary-forge = "github"
 primary-owner = "hyperpolymath"
-canonical-name = "rsr-template-repo"
-prefixed-name = "rm-rsr-template-repo"
+canonical-name = "anytype"
+prefixed-name = "at-anytype"
 
 [clade]
-primary = "rm"
-secondary = ["gv"]
-assigned = "2026-03-16"
-rationale = ""
+# PROVISIONAL clade codes — confirm/assign in gv-clade-index (the authority).
+# "at" = anytype kernel; secondary "et" = it implements Equality Theory. Not yet registry-verified.
+primary = "at"
+secondary = ["et"]
+assigned = "2026-06-28"
+rationale = "at = the anytype kernel (reference implementation); secondary et = it implements systemet (Equality Theory). PROVISIONAL pending gv-clade-index registration."
 
 [forges]
-github = "hyperpolymath/rsr-template-repo"
-gitlab = "hyperpolymath/rsr-template-repo"
-bitbucket = "hyperpolymath/rsr-template-repo"
+github = "hyperpolymath/anytype"
+gitlab = "hyperpolymath/anytype"
+bitbucket = "hyperpolymath/anytype"
 
 [lineage]
 type = "standalone"
-parent = "RSR template — scaffold for new repos"
-born = "2026-03-16"
+parent = "Split out of the combined 'EveryType' draft (2026-06-28): anytype is the kernel half; the theory half is the systemet repo."
+born = "2026-06-28"
