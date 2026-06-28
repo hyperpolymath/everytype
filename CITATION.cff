@@ -1,17 +1,20 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
-- family-names: "{{AUTHOR_LAST}}"
-  given-names: "{{AUTHOR_FIRST}}"
-  orcid: "https://orcid.org/0000-0000-0000-0000" # Placeholder
-title: "{{PROJECT_NAME}}"
+- family-names: "Jewell"
+  given-names: "Jonathan D.A."
+  orcid: "https://orcid.org/0000-0000-0000-0000" # TODO(owner): replace with real ORCID
+title: "anytype — the Equality Theory kernel"
 version: 0.1.0
-date-released: "{{CURRENT_DATE}}"
-url: "https://{{FORGE}}/{{OWNER}}/{{REPO}}"
-repository-code: "https://{{FORGE}}/{{OWNER}}/{{REPO}}"
+date-released: "2026-06-28"
+url: "https://github.com/hyperpolymath/anytype"
+repository-code: "https://github.com/hyperpolymath/anytype"
 license: MPL-2.0
 keywords:
+  - "type-checker"
+  - "equality-theory"
+  - "systemet"
+  - "graded-modal-types"
+  - "pluggable-grades"
   - "rsr"
   - "formal-verification"
-  - "neurosymbolic"
-  - "provenance"

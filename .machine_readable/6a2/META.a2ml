@@ -6,17 +6,22 @@
 
 [metadata]
 version = "0.1.0"
-last-updated = "2026-04-11"
+last-updated = "2026-06-28"
 
 [project-info]
-type = "library"  # TODO: update type (library|binary|service|website|monorepo)  # library | binary | monorepo | service | website
-languages = []             # e.g. ["rust", "zig", "idris2"]
+type = "binary"            # a type-checker kernel / engine
+languages = ["rust", "idris2", "zig"]   # planned kernel + typed ABI/FFI seam
 license = "MPL-2.0"
 author = "Jonathan D.A. Jewell (hyperpolymath)"
 
 [architecture-decisions]
 # ADR format: status = proposed | accepted | deprecated | superseded | rejected
-# - { id = "ADR-001", title = "Use Zig for FFI", status = "accepted", date = "2026-02-14" }
+adrs = [
+  { id = "ADR-001", title = "Rename EveryType -> anytype: no universal 'every type' claim; pick any L2 algebra", status = "accepted", date = "2026-06-28" },
+  { id = "ADR-002", title = "Split: theory -> systemet (semantic authority), kernel -> anytype (this repo); pin systemet upstream", status = "accepted", date = "2026-06-28" },
+  { id = "ADR-003", title = "Discipline is a parameter (the L2 grade algebra), checked by one set of rules", status = "accepted", date = "2026-06-28" },
+  { id = "ADR-004", title = "Equality is conversion (normalize+compare); totality gate makes it decidable; no coercions", status = "accepted", date = "2026-06-28" },
+]
 
 [development-practices]
 build-tool = "just"

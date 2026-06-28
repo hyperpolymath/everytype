@@ -1,41 +1,54 @@
 # SPDX-License-Identifier: MPL-2.0
-# Copyright (c) {{CURRENT_YEAR}} {{AUTHOR}} ({{OWNER}}) <{{AUTHOR_EMAIL}}>
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
 # ANCHOR.a2ml - authoritative anchor for this repository
 
 [metadata]
 version = "1.0.0"
-last-updated = "{{CURRENT_DATE}}"
+last-updated = "2026-06-28"
 
 [anchor]
 schema = "hyperpolymath.anchor/1"
-repo = "{{OWNER}}/{{REPO}}"
-authority = "upstream-canonical"
+repo = "hyperpolymath/anytype"
+authority = "satellite"           # downstream of systemet for the theory; canonical for the engine
 
 purpose = [
-  "Define canonical semantics and policy boundaries for this repository.",
-  "Declare what downstream/satellite repos can extend but not redefine.",
+  "Define the canonical behaviour of the anytype kernel (the engine).",
+  "Pin systemet upstream as the semantic authority for the theory, and extend-not-redefine it.",
   "Provide a stable golden path and invariant contract for release readiness.",
 ]
 
 [identity]
-project = "{{PROJECT_NAME}}"
-kind = "{{PROJECT_KIND}}"                # language | library | service | tool
-one-sentence = "{{PROJECT_PURPOSE}}"
-domain = "{{PROJECT_DOMAIN}}"
+project = "anytype"
+kind = "tool"                     # a type-checker kernel / engine
+one-sentence = "Reference kernel for Equality Theory: pick the L2 resource algebra, get the discipline."
+domain = "programming-language implementation / type checkers"
+
+[upstream]
+# anytype is a satellite of systemet (the theory). It must not redefine the theory.
+semantic-authority = "hyperpolymath/systemet"
+relationship = "implements"
+pin-required = true
+extend-not-redefine = true
 
 [semantic-authority]
-policy = "canonical"
+policy = "extends-upstream"
 
 owns = [
-  "Project semantics and specification",
-  "Invariant definitions and contractiles",
-  "Reference implementation behavior",
+  "anytype kernel behaviour (the checker, normaliser, grade-algebra interface)",
+  "The typed ABI/FFI seam and its layout proofs",
+  "Lowering/runtime behaviour (L0 target)",
+]
+
+defers-to-upstream = [
+  "Meaning of the layers and the gates (systemet)",
+  "The laws an L2 grade algebra must satisfy (systemet)",
+  "All proof obligations: L1 totality/soundness, trope preservation, TEA erasure (systemet)",
 ]
 
 [implementation-policy]
 allowed = ["Rust", "Idris2", "Zig", "Scheme", "Shell", "Just", "AsciiDoc", "Markdown"]
-forbidden = ["Node.js", "npm"]
+forbidden = ["Node.js", "npm", "TypeScript", "Python", "Go"]
 
 [golden-path]
 smoke-test-command = [
@@ -54,9 +67,3 @@ must-pin-upstream = true
 must-declare-authority = true
 must-have-anchor = true
 must-have-golden-path = true
-
-[semantic-authority-files]
-language-spec = "SPECIFICATION.md"
-formal-proofs = "docs/proofs/PROOFS.adoc"
-type-theory = "docs/theory/THEORY.adoc"
-algorithms = "docs/theory/ALGORITHMS.adoc"

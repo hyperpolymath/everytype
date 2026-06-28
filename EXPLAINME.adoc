@@ -1,251 +1,165 @@
-= EveryType - EXPLAINME
-How the README claims map to real files.
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+= anytype — EXPLAINME
+How the README claims map to real files, and where the engine actually is today.
 :toc: left
 :sectnums:
 :icons: font
 
-This file explains how EveryType’s main claims map to implementation files, proof boundaries, repository machinery, and caveats.
+The README is the public orientation: where the anytype kernel is going. This file
+is the engineering account: what exists, what is scaffolding, and where the evidence
+stops.
 
-The README is the public orientation.
+[IMPORTANT]
+====
+*Boundary.* anytype is the *kernel* (implementation). The *theory* it implements —
+the meaning of the layers, the gates, and the proof obligations — lives in
+link:https://github.com/hyperpolymath/systemet[systemet]. Claims about *what the
+theory says* belong in systemet's `EXPLAINME.adoc`; claims here are about *code and
+its current state*.
+====
 
-This file is the engineering account.
+== Current state (read this first)
 
-== SystemET Layering
+Claim: anytype is the reference kernel for Equality Theory.
 
-Claim: EveryType implements the open-source kernel for SystemET, a five-layer stratified type theory.
+Reality at this commit:
 
-How this is implemented:
+* There is *no working checker yet*. `src/` contains RSR scaffolding
+  (`src/interface/Abi/*.idr`, `src/interface/ffi/*.zig`, READMEs, AI-manifests), not
+  an anytype implementation.
+* `tests/` and `verification/proofs/` are template stubs, not anytype tests/proofs.
+* What is real today: the repository *shape* (RSR), the *design* of the kernel in
+  this file and the README, and the *split* that makes systemet the theory and
+  anytype the engine.
 
-* L0 runtime target lives under `src/` and target-specific backend modules.
-* L1 equality is implemented as normalization plus comparison, not a coercion calculus.
-* L2 resources are implemented through the graded-modal substrate and pluggable semiring machinery.
-* L3 guarded recursion is represented with `▶`.
-* L4 effects are currently an amber/open proof area under the TEA-erasure programme.
+Everything below describes the *intended* mapping. Where a file does not yet exist or
+is a stub, it is named as such. The dated, signed snapshot is `AFFIRMATION.adoc`.
 
-Caveat:
+== Pluggable grades (the L2 mechanism)
 
-* The README describes the intended SystemET architecture.
-* The current implementation status is bounded by `AFFIRMATION.adoc`, `AUDIT.adoc`, and the test suite.
-* L4 TEA erasure is not to be described as complete until `OPEN-A` is closed.
+Claim: a new discipline is a change of the L2 grade algebra, not a change of checker.
 
-== Totality Gate
+Intended implementation:
 
-Claim: At L1, type-level functions must terminate, so equality is conversion.
+* The checker is parameterised over a grade-algebra interface (a semiring with the
+  ordering the rules need).
+* Concrete grades (affine, cost, information-flow lattice, probability-like, privacy
+  budget, latency×billing) are instances of that interface.
 
-How this is implemented:
+Division of responsibility:
 
-* The totality checker rejects non-terminating type-level computation.
-* Equality checking normalizes both sides and compares normal forms.
-* There is no System-Fc-style coercion language.
-
-Caveat:
-
-* The guarantee is only as strong as the implemented totality checker and the proof status recorded in `AFFIRMATION.adoc`.
-* Any accepted escape hatch must be documented as an assumption or unsafe boundary.
-
-== Structural Gate
-
-Claim: EveryType admits shallow structural projection but refuses deep co/contravariant rewriting.
-
-How this is implemented:
-
-* Rows, variants, refinements, and record-like products are handled through shallow CAR/CDR-style projection.
-* The permitted structural behaviour is projection from additive product structure.
-* Deep variance through function spaces, effects, resources, lifetimes, or linear positions is intentionally not admitted as a general rule.
+* systemet *defines the laws* a grade algebra must satisfy.
+* anytype *implements the interface and checks candidates against those laws*.
 
 Caveat:
 
-* This is a design boundary, not an omission.
-* Contributions that reintroduce deep variance must justify why they do not recreate the Coherence Cliff.
+* None of this interface exists in code yet. It is the kernel's first build target.
 
-== Polarity Gate
+== L1 equality and the totality gate
 
-Claim: EveryType admits polarized casts, not true gradual `any`.
+Claim: equality is `normalize` then `compare`, with no coercion language, made
+decidable by a totality check on type-level computation.
 
-How this is implemented:
+Intended implementation:
 
-* Forward casts `A -> ?` are treated as lossless forgetting.
-* Backward casts `? -| A` are treated as lossy recovery attempts.
-* Lossy recovery is marked with a blame grade such as `!_{blame}`.
-
-Caveat:
-
-* There is no universal `any` that silently escapes the type system.
-* A backward cast is not magic. It is a graded loss event.
-
-== Pluggable Grades
-
-Claim: EveryType can express different disciplines by changing the L2 algebra.
-
-How this is implemented:
-
-* The checker is parameterised over a grade algebra.
-* Example grades include affine usage, costs, security lattices, probability-like grades, privacy budgets, and latency/billing products.
+* A normaliser + structural comparison for the conversion relation.
+* A totality checker that rejects non-terminating type-level functions, so conversion
+  terminates.
 
 Caveat:
 
-* A proposed grade must satisfy the laws required by the checker.
-* “Pick the algebra” does not mean arbitrary metadata. The algebra must support the relevant operations and ordering discipline.
+* The strength of "equality is conversion" is exactly the strength of the totality
+  checker. Any escape hatch must be recorded as an explicit unsafe boundary in
+  `AFFIRMATION.adoc`, never folded silently into equality. The *theorem* that this is
+  sound is systemet's obligation; this repo only has to *implement the check*.
 
-== TEA Erasure
+== Structural and polarity gates
 
-Claim: Total, effect-graded, affine handlers should erase when the TEA discipline proves them observationally harmless.
+Claim: shallow `CAR`/`CDR` projection is admitted; deep variance is refused. Casts
+are polarized (`A -> ?` lossless, `? -| A` blame-graded); there is no universal `any`.
 
-How this is implemented:
+Intended implementation:
 
-* TEA is treated as an L4 erasure target.
-* The intended condition is Total + Effect-graded + Affine.
-* Effects are not assumed free merely because they are typed.
-
-Caveat:
-
-* This is currently an open proof area.
-* The README must describe TEA erasure as a target or amber claim until the formal proof is complete.
-
-== Roles to Tropes
-
-Claim: EveryType replaces global roles and coercions with local finite trope transitions.
-
-How this is implemented:
-
-* Rather than proving global representational equality, EveryType represents state-indexed movement as `A@t1 -> A@t2 -> A@t3`.
-* Tropes are finite transition machines.
-* API protocols such as file handles, sockets, transactions, and streams can be modelled as finite movement through states.
+* Projection from additive products `&`; refusal of deep co/contravariant rewriting.
+* A blame grade `!_{blame}` carried as part of L2 accounting on backward casts.
 
 Caveat:
 
-* Tropes do not mean “all role problems are solved automatically.”
-* Each real API needs a finite machine and preservation story.
+* These are design boundaries the kernel must enforce; the justification for *why*
+  they avoid the Coherence Cliff is systemet's, not this repo's.
 
-== RSR Integration
+== Roles to tropes
 
-Claim: EveryType uses the Rhodium Standard Repository structure without making that infrastructure part of the language kernel.
+Claim: global roles/coercions are replaced by local finite trope machines
+`A@t1 -> A@t2 -> A@t3`.
 
-How this is implemented:
+Intended implementation:
 
-* `0-AI-MANIFEST.a2ml` is the universal entry point for AI agents.
-* `.machine_readable/` stores project metadata, policies, anchors, contractiles, and agent-readable state.
-* `Justfile` provides the task surface.
-* `just validate` checks the repository shape.
-* `AFFIRMATION.adoc` records the dated honesty snapshot.
-* `AUDIT.adoc` acts as the release audit gate.
+* A representation of finite, model-checkable transition machines.
+* Per-API machines (file handles, sockets, transactions, streams, WASM capabilities).
 
 Caveat:
 
-* RSR machinery is repository infrastructure.
-* It is not part of the EveryType type theory.
-* Passing RSR validation does not prove SystemET soundness.
+* The *preservation result* is systemet's proof obligation. anytype implements the
+  machines and the runtime check; it does not, by existing, prove them sound.
 
-== Central Session Protocol Authority
+== TEA erasure (L4)
 
-Claim: Session protocols are centrally maintained and not duplicated in this repository.
+Claim: a Total + Effect-graded + Affine handler should erase completely.
 
-How this is implemented:
+Reality:
 
-* `session/dispatch.sh` maps canonical commands to central protocol paths in `standards/session-management-standards`.
-* Local files such as `session/custom-checks.k9`, `session/local-hooks.sh`, and `coordination.k9` are integration-only.
+* This is *OPEN* in systemet and *not started* here. The kernel must not emit code or
+  documentation claiming TEA erasure until systemet proves the condition and it is
+  recorded in `AFFIRMATION.adoc`.
 
-Caveat:
+== Typed ABI/FFI seam
 
-* If `SESSION_STANDARDS_DIR` is unset and no adjacent standards checkout exists, the dispatcher records the command but cannot resolve central checklist paths.
-
-== Canonical Command Surface
-
-Claim: Template bindings align to one canonical command model.
+Claim: anytype has a formally-typed ABI/FFI seam.
 
 How this is implemented:
 
-* `Justfile` provides thin aliases such as:
-  ** `intake-repo`
-  ** `checkpoint-change`
-  ** `verify-maintenance`
-  ** `verify-substantial`
-  ** `verify-release`
-  ** `close-planned`
-  ** `close-urgent`
-  ** `recover-repo`
-  ** `handover-*`
-
-* Every alias calls `session/dispatch.sh` with canonical verb-object pairs.
+* `src/interface/Abi/` holds Idris2 interface/layout descriptions; `src/interface/ffi/`
+  holds the Zig FFI; `src/interface/generated/` is where generated C headers land.
 
 Caveat:
 
-* Recipes are wrappers only.
-* They do not replace protocol content from the central standards repository.
+* These are currently the *template's* seam files, not anytype-specific ones. They
+  demonstrate the pattern; they do not yet describe an anytype ABI.
 
-== Runtime State Is Local
+== RSR integration
 
-Claim: Session state is per-repository runtime output, not standards text.
+Claim: anytype uses the Rhodium Standard Repository structure without that
+infrastructure being part of the kernel.
 
 How this is implemented:
 
-* `session/dispatch.sh` writes command and continuity-core capture stubs to `.session/LAST-CANONICAL-COMMAND.md`.
+* `0-AI-MANIFEST.a2ml` is the AI-agent entry point; `.machine_readable/` holds
+  metadata, policy, contractiles, anchors, and agent-readable state; `just validate`
+  checks repository shape; `AFFIRMATION.adoc` is the dated honesty snapshot;
+  `AUDIT.adoc` is the release gate.
 
 Caveat:
 
-* Runtime files are intentionally lightweight.
-* They require human or agent completion.
+* Passing RSR validation proves the repository is well-formed. It proves nothing about
+  the kernel's correctness or about systemet's soundness. Separate claims, separate
+  evidence.
 
-== Template Token Policy
+== Dependency updates
 
-Claim: Placeholders are explicit template content until initialization.
+Claim: dependency bumps land fast and safely.
 
 How this is implemented:
 
-* Template files keep `{{TOKEN}}` placeholders visible.
-* `just init` performs token replacement.
-
-Caveat:
-
-* Uninitialized placeholders must not be treated as project-specific truth.
-
-== Dependency Updates
-
-Claim: Dependency bumps land fast and safely, without manual chasing.
-
-How this is implemented:
-
-* `dependabot.yml` watches supported ecosystems used by the estate:
-  ** `github-actions`
-  ** `cargo`
-  ** `mix`
-  ** `docker`
-
-* `dependabot-automerge.yml` auto-merges bumps only once required checks are green.
-
-Caveat:
-
-* A broken bump fails CI and stays open.
-* It does not land on a red main.
-* Dependabot has no direct Deno or Bun ecosystem.
-* Do not add Dependabot as a ruleset bypass actor, because that lets bumps skip required checks.
-
-== Julia Registry Packages
-
-Claim: If this template is used to create a Julia package, it must remain a standalone repository registered with the Julia package registry.
-
-How this is implemented:
-
-* Julia’s package registry expects each registered package to be a standalone repository.
-* `Project.toml` must live at the repository root.
-* `Pkg.add()`, dependency resolution, and package discovery depend on the canonical structure.
-
-Caveat:
-
-* Do not move a registered Julia package into a monorepo subdirectory.
-* Non-registry Julia packages can be organized differently if they are not published to a registry.
+* `dependabot.yml` watches the supported ecosystems (`github-actions`, `cargo`, `mix`,
+  `docker`); `dependabot-automerge.yml` merges bumps only once required checks are
+  green. A broken bump fails CI and stays open; it does not land on a red `main`.
+* Do not add Dependabot as a ruleset bypass actor — that would let bumps skip required
+  safety checks.
 
 == Licence
 
-Claim: The project uses split licensing.
-
-How this is implemented:
-
-* Code, configuration, and scripts use MPL-2.0.
-* Prose documentation uses CC-BY-SA-4.0.
-* Per-file SPDX headers are authoritative.
-
-Caveat:
-
-* The root `LICENSE` controls GitHub’s detected licence.
-* Documentation licensing must be preserved through explicit SPDX headers.
+* Code/config/scripts: `MPL-2.0`. Prose documentation: `CC-BY-SA-4.0`.
+* Per-file `SPDX-License-Identifier` headers are authoritative; the root `LICENSE`
+  controls GitHub's detected licence.
